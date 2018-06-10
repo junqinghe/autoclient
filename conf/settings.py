@@ -1,6 +1,6 @@
 import os,sys
-USER='HJQ'
-PWD=123
+USER='192.168.2.107'
+PWD=123456
 MODE='AGENT'
 DEBUG=True
 BASE_DIR=os.path.dirname(os.path.dirname(__file__))

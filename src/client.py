@@ -14,6 +14,9 @@ class Agent(Base):   #继承上面
     '''agent模式'''
     def execute(self):
         server_info =PluginsManager().exec_plugins()
+        for k,v in server_info.items():
+            print(k,v)
+
         hostname=server_info['basic']['data']['hostname']
 
         certname=open(setting.CERTNAME_PATH,'r',encoding='utf-8').read().strip()
@@ -42,6 +45,7 @@ class SSHSALT(Base):
 
         response=requests.get(setting.API,headers={'Openkey':auth()})       #获取请求的时候要做api验证
         result=json.loads(response.text)
+        # print(result)
         if not result['status']:
             return
         else:

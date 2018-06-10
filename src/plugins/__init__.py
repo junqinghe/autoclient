@@ -18,8 +18,9 @@ class PluginsManager(object):
         获取所有的插件，并执行获取插件的返回值
         :return:
         '''
-        response={}
+        response = {}
         for k,v in self.plugin_dict.items():
+
             ret={'status':True,'data':None}
             try:
                 module_path,class_name= v.rsplit('.',1)
@@ -34,7 +35,10 @@ class PluginsManager(object):
             except Exception as e:
                 ret['status']=False
                 ret['data']='[%s][%s]采集数据出现错误：%s'%(self.hostname if self.hostname else 'AGENT',k,traceback.format_exc())
+
             response[k]=ret
+            # print(k,response)
+
         return response
 
     def command(self,cmd):

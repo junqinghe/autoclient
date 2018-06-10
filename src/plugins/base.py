@@ -1,3 +1,5 @@
+import os
+from lib.conf.config import setting
 
 class BasePlugin(object):
     def __init__(self):

@@ -23,7 +23,7 @@ class Settings(object):
         for name in dir(settings):
             if name.isupper():
                 value=getattr(settings,name)
-                print(value)
+
                 setattr(self,name,value)
 
 setting=Settings()

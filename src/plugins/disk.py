@@ -10,25 +10,44 @@ class Disk(object):
 
     def process(self,command_func,debug):
         if debug:
-            output = open(os.path.join(setting.BASE_DIR, 'file/memory.out'), 'r', encoding='utf-8').read()
+            output = open(os.path.join(setting.BASE_DIR, 'file/disk.out'), 'r', encoding='utf-8').read()
         else:
-            output = command_func('sudo dmidecode -q -t 17 2>/dev/null')
+            output = command_func('sudo MegaCli  -PDList -aALL')
         return self.parse(output)
 
-    def parse(self,content):
-        response = {
-            '5':{
-                'pd_type':'SATA',
-                'slot':'5',
-                'capacity':'281.231',
-                'model':'SESDSDFSADAS DASF Sumsung sf'
-            },
-            '2': {
-                'pd_type': 'SAS',
-                'slot': '1',
-                'capacity': '281.231',
-                'model': 'SESDSDFSADAS DASF'
-            }
-        }
 
+
+    def parse(self,content):
+        import re
+        response = {}
+        result = []
+        for row_line in content.split("\n\n\n\n"):
+            result.append(row_line)
+        for item in result:
+            temp_dict = {}
+            for row in item.split('\n'):
+                if not row.strip():
+                    continue
+                if len(row.split(':')) != 2:
+                    continue
+                key, value = row.split(':')
+                name = self.mega_patter_match(key)
+                if name:
+                    if key == 'Raw Size':
+                        raw_size = re.search('(\d+\.\d+)', value.strip())
+                        if raw_size:
+                            temp_dict[name] = raw_size.group()
+                        else:
+                            raw_size = '0'
+                    else:
+                        temp_dict[name] = value.strip()
+            if temp_dict:
+                response[temp_dict['slot']] = temp_dict
         return response
+
+    def mega_patter_match(self, needle):
+        grep_pattern = {'Slot': 'slot', 'Raw Size': 'capacity', 'Inquiry': 'model', 'PD Type': 'pd_type'}
+        for key, value in grep_pattern.items():
+            if needle.startswith(key):
+                return value
+        return False
